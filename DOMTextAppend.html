@@ -1,0 +1,73 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Text Append Basics</title>
+</head>
+<body>
+Append Text or Objects to a Webpage<br><br>
+
+<script>
+// Example 1 - Add simple text string to the page
+const body = document.body;   // create body object
+body.append("1. Paperboy");   // append some text
+
+// Example 2 - Add DIV object containing text string
+const div = 
+   document.createElement('div');     // create <div> object
+div.innerText = "2. Sparkle";         // append text to div object
+div.style.backgroundColor = "yellow"; // set background color of div
+body.append(div);                     // append div object to the page
+
+// Example 3 - Add an input object and set a text label
+const input =
+   document.createElement("input");  // create <div> object
+input.defaultValue = "3. Milkman";   // add text to default value of input
+body.appendChild(input);             // append input object to the page
+
+// Example 4 - Add <strong> html text to the page
+const div2 = 
+document.createElement('div');    // create <div> object
+div2.innerHTML = 
+   "4. <strong>Bakery</strong>";  // append text to div object
+body.append(div2);                // append div object to the page
+
+// Example 5 - Add underlined text object to the page
+const underline 
+   = document.createElement('u'); // create <u> object
+underline.innerText = 
+   "5. Monkey Wrench";            // append text to <u>
+body.append(underline);           // append <u> object to the page
+
+// Example 6 - Add an image to the page
+const img1 = 
+   document.createElement('img');  // create <img> object
+img1.src = 'https://openclipart.org/image/2400px/svg_to_png/20277/Farmeral-metal-icon.png';        // set image src
+img1.width = '100';                // set image width
+img1.height = '100';               // set image height
+img1.style.border = "thin solid black"; // set border style
+newline = document.createElement('br'); // create <br> object
+body.append(newline);             // append the newline
+body.append("6. ");               // append some text
+body.append(img1);                // append the image object
+
+// Example 7 - Add table text to the page
+const table1 = 
+   document.createElement('table'); // create <table> object
+const tRow1 = 
+   document.createElement('tr');    // create <tr> object
+const tCell1 = 
+   document.createElement('td');    // create <td> object
+const tCell2 = 
+   document.createElement('td');    // create <td> object
+table1.border = "1";                // set border size
+table1.padding = "5";               //
+tCell1.innerText = "7.";            // add text to cell #1
+tCell2.innerText = "Lucky Charm";   // add text to cell #2
+table1.appendChild(tRow1);          // append row 1 to table 1
+tRow1.appendChild(tCell1);          // append cell 1 to row 1
+tRow1.appendChild(tCell2);          // append cell 2 to row 1
+body.appendChild(table1);           // append table object to the page
+</script>
+
+</body>
+</html>
