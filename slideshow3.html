@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<!-- ---------------------------------------------------------
+Page Name: slideshow3.html
+Purpose:   Load photo images into an HTML page under control of 
+           javascript buttons to page forward and backward
+Author:    Tony Byorick		   
+Date:      Feb 18 2021
+Version:   1.1.05
+Changes:   1.1.04 Load image names and captions from a JSON text file
+           1.1.05 Add support for selecting large or small images
+Desc:      Uses the fetch() function to get a JSON file from
+           the web server. The JSON file has names of images
+           to be displayed. "Next" and "Prev" buttons pages thru
+           the images.		   
+NEXT STEP: 1. Fix call to fetch API causing inconsistant image 
+              display upon inital call of web page
+----------------------------------------------------------- -->
+<head>
+  <meta charset="utf-8">
+  <title>4 Load Image</title>
+<style>
+table, th, td {
+  border: 1px solid black;
+  border-collapse: collapse;
+}
+th, td {
+  padding: 10px;
+}
+</style>
+</head>
+<body>
+
+<br>
+<!-- -------------------------- Table Start ------------------------ -->
+<table>
+<tr>
+   <td style="text-align:center"><button class="prev">Prev</button></td>
+   <td style="text-align:center"><button class="next">Next</button></td>
+   <td style="text-align:center"><div id="myPageNumber"></div></td>
+
+</tr>
+<!-- ---- Row 2 ------- -->
+<tr><td colspan="2" rowspan="2">
+<div class="results">
+    <section>
+    </section>
+</div>
+   </td>
+   <td style="text-align:center"><button class="big">Big</button></td></tr>
+   <tr><td style="text-align:center"><button class="small">Small</button></td></tr>
+</td></tr>
+<!-- ---- Row 3 ------- -->
+<tr>
+   <td colspan="3" style="text-align:center; font-family: Verdana; color: black; font-size: 14px;">
+      <div id="myCaption"></div>
+   </td>
+</tr>
+
+</table>
+<!-- -------------------------- Table End ------------------------ -->
+
+<br>
+<div id="myData"  style="font-family: Verdana; color: black; font-size: 12px;"></div>
+
+<script>
+//-------------------------------------------------
+// Global Vars
+//-------------------------------------------------
+var globArr = []; // will be loaded with names of
+                  // image files
+var globImageHeight = '219'; // default size
+var globImageWidth = '329';  // default size
+
+var imgHeight = 219 * 2;
+var imgWidth = 329 * 2;
+
+globImageHeight = imgHeight; // set global height 
+globImageWidth = imgWidth;   // set global width 
+
+//-------------------------------------------------
+//                     URL 
+//           Get URL of current window
+//-------------------------------------------------
+const parsedUrl = new URL(window.location.href);
+console.log(parsedUrl.searchParams.get("id")); // "123" 
+
+//---------------------------------------------------
+// Get the web server host name of the current window
+// If the web page is local, add port of 8008 
+//---------------------------------------------------
+const imgHost = parsedUrl.hostname;
+let imgPort = '';
+if(imgHost === '192.168.0.16') {
+  imgPort = ':8008';
+} else {
+  imgPort = '';
+}
+
+// For debugging
+//console.log('Hostname: ' + parsedUrl.hostname); //  
+//console.log('Path: ' + parsedUrl.pathname); //  
+//console.log('Search: ' + parsedUrl.search); //  
+
+//-------------------------------------------------
+//                Search Params
+//-------------------------------------------------
+var qryParams = new URLSearchParams(parsedUrl.search);
+console.log('Qry Parms: ' + qryParams.toString()); //  
+var searchParams = new URLSearchParams(qryParams);
+
+//Iterate the search parameters.
+for (let p of searchParams) {
+  console.log(p);
+}
+
+console.log("searchParm: show: " + searchParams.get("show"));
+var jsonFileName = searchParams.get("show");
+// listnames=true or listnames=false
+var listNamesParm = searchParams.get("listnames");
+
+console.log("jsonFileName = " + jsonFileName);
+console.log("listNamesParm = " + listNamesParm);
+
+// Grab references to Nav Buttons
+const nextBtn = document.querySelector('.next');
+const previousBtn = document.querySelector('.prev');
+
+// Add Nav Button Listeners
+nextBtn.addEventListener('click', nextPage);
+previousBtn.addEventListener('click', previousPage);
+
+// Grab references to Size Buttons
+const bigImageBtn = document.querySelector('.big');
+const smallImageBtn = document.querySelector('.small');
+
+// Add Size Button Listeners
+bigImageBtn.addEventListener('click', bigImage);
+smallImageBtn.addEventListener('click', smallImage);
+
+// Set small image size if page is local
+if(imgPort == ':8008') {
+   globImageHeight = 219 * 1;
+   globImageWidth = 329 * 1;
+   }
+
+
+
+// Set the initial page number
+let pageNumber = 0;
+
+// ----------------------------------------------------
+//  FUNCTIONS
+// ----------------------------------------------------
+  function displayImage(imgNum, slideArr) {
+      //console.log('Running displayImage: ' + imgNum);
+
+      console.log('Running displayImage: ' + imgNum + ' ' + slideArr[imgNum]);
+	  
+	  var jpgName = "";
+	  var caption = "";
+	  const words = slideArr[imgNum].split('~');
+	  jpgName = words[0];  // image file name
+	  caption = words[1];  // image caption
+	  
+      // Grab references to DOM elements
+      const section = document.querySelector('section');
+      const article = document.createElement('article');
+      const img = document.createElement('img');
+      const imgCaption = document.getElementById("myCaption");
+      const imgDisplayNum = document.getElementById("myPageNumber");
+	  
+	  imgCaption.innerHTML = caption;
+	  imgDisplayNum.innerHTML = imgNum + 1;
+
+      //console.log('Hostname: [' + imgHost + ']');   
+      //console.log('Port: [' + imgPort + ']');   
+	  
+      // Create URL for image to be loaded
+	  // Global Vars: imgHost, imgPort, myImages
+      img.src = 'http://' + imgHost + imgPort + '/lab/image/' + jpgName;
+
+      // For debugging
+      //window.alert(img.src);
+	  
+      img.alt = 'Pictures';
+      //img.height = '219';
+      //img.width = '329';
+
+      // Get-Set Image Size from Global Vars
+      img.height = globImageHeight;
+      img.width = globImageWidth;
+
+      console.log('Image Size: ' + img.height + 'x' + img.width);
+
+      article.appendChild(img);
+	  section.removeChild(section.firstChild);
+      section.appendChild(article);
+    }
+
+  // ---------------------------------------------
+  // Increment the page number and load the image   
+  // ---------------------------------------------
+  function nextPage(e) {
+    if(pageNumber < globArr.length - 1) {
+    //if(pageNumber < myImages.length - 1) {
+      pageNumber++;
+    } else {
+      return;
+    }
+    console.log('Next: ' + pageNumber);
+    displayImage(pageNumber, globArr);
+  };
+
+  // ---------------------------------------------
+  // Decrement the page number and load the image   
+  // ---------------------------------------------
+  function previousPage(e) {
+    if(pageNumber > 0) {
+      pageNumber--;
+    } else {
+      return;
+    }
+    console.log('Previous: ' + pageNumber);
+    displayImage(pageNumber, globArr);
+  };
+
+  // ---------------------------------------------
+  // Big Image Size   
+  // ---------------------------------------------
+  function bigImage(e) {
+    globImageHeight = 219 * 2;
+    globImageWidth = 329 * 2;
+
+    console.log('Next: ' + pageNumber);
+    displayImage(pageNumber, globArr);
+  };
+
+
+  // ---------------------------------------------
+  // Small Image Size   
+  // ---------------------------------------------
+  function smallImage(e) {
+    globImageHeight = 219 * 1;
+    globImageWidth = 329 * 1;
+
+    console.log('Next: ' + pageNumber);
+    displayImage(pageNumber, globArr);
+  };
+
+  // ---------------------------------------------
+  // Use fetch() to get a list of image names and 
+  // captions.  Images are stored in jsonFile which
+  // is a URL query parm parsed at the top of the
+  // script
+  // ---------------------------------------------
+  function getImageNames(jsonFile) {
+     console.log('getImageNames from: ' + jsonFile);
+     fetch('support/' + jsonFile)
+      .then(function (response) {
+         return response.json();
+         })
+      .then(function (data) {
+         appendData(data);
+         })
+      .catch(function (err) {
+         console.log('error: ' + err);
+         });
+  };
+
+function appendData(data) {
+   var mainContainer = document.getElementById("myData");
+   for (var i = 0; i < data.length; i++) {
+      var div = document.createElement("div");
+      //div.innerHTML = 'Name: ' + data[i].jpgName + ' ' + data[i].caption;
+      div.innerHTML = i+1 + ': ' + data[i].jpgName + ' ' + data[i].caption;
+
+	  //console.log(i + '~' + data[i].jpgName + '~' + data[i].caption);
+	  
+	  globArr.push(data[i].jpgName + '~' + data[i].caption);
+	  
+	  if (listNamesParm == "true") {
+         mainContainer.appendChild(div);
+		 }
+      }
+   console.log(globArr); 
+   console.log('0' + '~' + globArr[0]);
+   // Initial display of image 0 must occur within
+   // the fetch() handler because the handler for datetime
+   // is not called until the page is fully loaded
+   //displayImage(0, globArr);
+   displayImage(0, globArr);
+   }
+
+// Use FETCH() API to add names of image 
+// files in the slideshow (JSON-->globArr)
+//getImageNames("boo.json"); 
+getImageNames(jsonFileName); 
+
+
+
+
+
+
+</script>
+
+      <script>
+         function alertFunction() {
+		    console.log('Page Loaded');
+			console.log('0' + '~' + globArr[0]);
+            //alert('ok');
+         }
+         window.onload = alertFunction;
+      </script>
+
+
+</body>
+</html>
