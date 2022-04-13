@@ -22,3 +22,10 @@ The page illustrates 6 different methods for adding or modifying content (text a
 5. use append() to add underlined text
 6. use append() to add an image object. Set src attribute with the URL of the image to be displayed and then set image size using width and height attributes
 7. use append() to add a table with two cells containing text
+
+4/12/20 Uploaded slideshow3.html 
+https://www.core3.com/usr2/slideshow3.html?show=seattle.json&caption=on&listnames=false 
+The page mimics an old fashioned slideshow by displaying a group of pictures one at a time.
+
+![From Kerry Park](https://user-images.githubusercontent.com/103004352/163073395-daf1e0a1-8b5b-43d1-a3f1-3f031e4fb50c.png)
+
