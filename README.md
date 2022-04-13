@@ -3,7 +3,7 @@ Javascript, CSS, HTML lab, DOM
 
 **Page 1** - 4/4/20 - Posted `imageLoad.html` and two gif files.
 https://www.core3.com/usr2/imageLoad.html
-When the page initially loads, a placeholder image is displayed; along with a button. After the button is clicked, the placeholder is replaced by a hello world image.
+When the page initially loads, a placeholder image is displayed, along with a button. When the button is clicked, the placeholder is replaced by a hello world image.
 
 ![image](https://user-images.githubusercontent.com/103004352/161812904-667e8586-e1fa-4a60-9314-e5b87285b9ae.png)
 
